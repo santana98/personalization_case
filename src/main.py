@@ -3,11 +3,8 @@ from fastapi import FastAPI
 
 from src.api.routes import health, recommendations
 
-from src.core.middleware import logging_middleware
-
 app = FastAPI(title='recommendations')
 
-app.middleware("http")(logging_middleware)
 
 app.include_router(health.router)
 app.include_router(recommendations.router)
