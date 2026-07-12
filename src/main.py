@@ -1,11 +1,22 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 
 from src.api.routes import health, recommendations
+from src.core.middleware import log_requests
+from src.model.model_loader import load_model
 
-app = FastAPI(title='recommendations')
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    load_model()
+    yield
 
 
+app = FastAPI(title="Recommendations", lifespan=lifespan)
+
+app.middleware("http")(log_requests)
 app.include_router(health.router)
 app.include_router(recommendations.router)
 
