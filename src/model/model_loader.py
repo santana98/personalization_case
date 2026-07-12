@@ -1,15 +1,13 @@
 # src/model/model_loader.py
 from datetime import datetime, UTC
-import os
 import pickle
 from pathlib import Path
 from typing import Any
 
 from src.core.logging import app_logger
 
-DEFAULT_MODEL_PATH = Path("src/model/artifacts/model.pkl")
 
-logger = app_logger.getChild('model_loader')
+logger = app_logger.getChild('model.model_loader')
 
 class ModelLoaderError(RuntimeError):
     """Erro relacionado ao carregamento do artefato."""
@@ -27,12 +25,12 @@ class _ModelRegistry:
         self.loaded: bool = False
         self.model_loaded_at = datetime.now(UTC)
 
-    def load(self) -> None:
+    def load(self, model_path: Path) -> None:
         if self.loaded:
             logger.debug("Modelo já carregado. Ignorando novo carregamento.")
             return
 
-        model_path = Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH)))
+        model_path = model_path
 
         logger.info(
             "Iniciando carregamento do modelo: %s",
@@ -104,11 +102,8 @@ class _ModelRegistry:
 _registry = _ModelRegistry()
 
 
-def load_model() -> None:
-    """
-    Deve ser chamado durante o startup da API.
-    """
-    _registry.load()
+def load_model(model_path: str,) -> None:
+    return _registry.load(Path(model_path))
 
 
 def get_model() -> Any:
