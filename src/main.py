@@ -6,11 +6,23 @@ from fastapi import FastAPI
 from src.api.routes import health, recommendations
 from src.core.middleware import log_requests
 from src.model.model_loader import load_model
+from src.core.settings import settings
+from src.features.loader import DataLoader
+
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    load_model()
+    load_model(model_path=settings.model_path)
+    loader = DataLoader(
+        products_path=settings.products_path,
+        events_path=settings.events_path,
+    )
+
+    datasets = loader.load()
+
+    app.state.products_df = datasets.products
+    app.state.events_df = datasets.events
     yield
 
 
