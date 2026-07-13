@@ -40,15 +40,9 @@ class ProductProcessor:
             len(products_df),
         )
 
-        self._products_by_id = self._build_product_index(
-            products_df
-        )
+        self._products_by_id = self._build_product_index(products_df)
 
-        self._popularity_ranking = (
-            self._build_popularity_ranking(
-                products_df
-            )
-        )
+        self._popularity_ranking = self._build_popularity_ranking(products_df)
 
         logger.info(
             "ProductProcessor inicializado. products=%d ranking=%d",
@@ -77,14 +71,10 @@ class ProductProcessor:
     def _build_popularity_ranking(
         products_df: pd.DataFrame,
     ) -> list[str]:
-        ranking = (
-            products_df
-            .sort_values(
-                by="popularity_score",
-                ascending=False,
-            )["product_id"]
-            .tolist()
-        )
+        ranking = products_df.sort_values(
+            by="popularity_score",
+            ascending=False,
+        )["product_id"].tolist()
 
         return ranking
 
@@ -101,16 +91,12 @@ class ProductProcessor:
                 product_id,
             )
 
-            raise ProductNotFoundError(
-                f"Unknown product_id='{product_id}'"
-            ) from exc
+            raise ProductNotFoundError(f"Unknown product_id='{product_id}'") from exc
 
     def get_known_product_ids(
         self,
     ) -> set[str]:
-        return set(
-            self._products_by_id.keys()
-        )
+        return set(self._products_by_id.keys())
 
     def get_popularity_ranking(
         self,

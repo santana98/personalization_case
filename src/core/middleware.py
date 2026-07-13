@@ -3,7 +3,8 @@ from uuid import uuid4
 from fastapi import Request
 from src.core.logging import app_logger
 
-logger = app_logger.getChild('middleware')
+logger = app_logger.getChild("middleware")
+
 
 async def log_requests(request: Request, call_next):
     request_id = request.headers.get("X-Request-ID", str(uuid4()))

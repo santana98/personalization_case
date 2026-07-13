@@ -23,11 +23,9 @@ async def lifespan(app: FastAPI):
 
     product_processor = ProductProcessor(
         products_df=datasets.products_df,
-        )
-
-    events_processor = EventsProcessor(
-        events_df=datasets.events_df
     )
+
+    events_processor = EventsProcessor(events_df=datasets.events_df)
 
     yield
 

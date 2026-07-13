@@ -7,7 +7,8 @@ from typing import Any
 from src.core.logging import app_logger
 
 
-logger = app_logger.getChild('model.model_loader')
+logger = app_logger.getChild("model.model_loader")
+
 
 class ModelLoaderError(RuntimeError):
     """Erro relacionado ao carregamento do artefato."""
@@ -80,9 +81,7 @@ class _ModelRegistry:
 
         self.loaded = True
 
-        logger.info(
-            "Modelo carregado com sucesso."
-        )
+        logger.info("Modelo carregado com sucesso.")
 
     def validate_features(
         self,
@@ -102,7 +101,9 @@ class _ModelRegistry:
 _registry = _ModelRegistry()
 
 
-def load_model(model_path: str,) -> None:
+def load_model(
+    model_path: str,
+) -> None:
     return _registry.load(Path(model_path))
 
 

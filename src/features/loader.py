@@ -11,12 +11,7 @@ from src.features.schemas import EVENT_SCHEMA, PRODUCT_SCHEMA
 logger = app_logger.getChild("features.loader")
 
 
-VALID_EVENT_TYPES = {
-    "view",
-    "click",
-    "add_to_cart",
-    "purchase"
-}
+VALID_EVENT_TYPES = {"view", "click", "add_to_cart", "purchase"}
 
 
 @dataclass(slots=True)
@@ -117,9 +112,7 @@ class DataLoader:
                 "Arquivo de dataset não encontrado: '%s'.",
                 path,
             )
-            raise FileNotFoundError(
-                f"Arquivo de dataset não encontrado: {path}"
-            )
+            raise FileNotFoundError(f"Arquivo de dataset não encontrado: {path}")
 
         try:
             return pd.read_csv(file_path)
@@ -128,9 +121,7 @@ class DataLoader:
                 "Falha ao ler dataset '%s'.",
                 path,
             )
-            raise DatasetValidationError(
-                f"Falha ao ler dataset: {path}"
-            ) from exc
+            raise DatasetValidationError(f"Falha ao ler dataset: {path}") from exc
 
     @staticmethod
     def _validate_required_columns(
@@ -157,11 +148,7 @@ class DataLoader:
         df: pd.DataFrame,
         columns: set[str],
     ) -> None:
-        null_columns = [
-            column
-            for column in columns
-            if df[column].isna().any()
-        ]
+        null_columns = [column for column in columns if df[column].isna().any()]
 
         if null_columns:
             logger.error(
@@ -183,9 +170,7 @@ class DataLoader:
             df["avg_rating"] = df["avg_rating"].astype(float)
             df["popularity_score"] = df["popularity_score"].astype(float)
         except Exception as exc:
-            logger.exception(
-                "Falha ao converter os tipos do dataset de produtos"
-            )
+            logger.exception("Falha ao converter os tipos do dataset de produtos")
             raise DatasetValidationError(
                 "Tipos de dados inválidos encontrados no dataset de produtos."
             ) from exc
@@ -202,9 +187,7 @@ class DataLoader:
                 errors="raise",
             )
         except Exception as exc:
-            logger.exception(
-                "Falha ao converter os tipos do dataset de eventos."
-            )
+            logger.exception("Falha ao converter os tipos do dataset de eventos.")
             raise DatasetValidationError(
                 "Tipos de dados inválidos encontrados no dataset de eventos."
             ) from exc
@@ -216,11 +199,7 @@ class DataLoader:
         duplicated = df["product_id"].duplicated()
 
         if duplicated.any():
-            duplicated_ids = (
-                df.loc[duplicated, "product_id"]
-                .unique()
-                .tolist()
-            )
+            duplicated_ids = df.loc[duplicated, "product_id"].unique().tolist()
 
             logger.error(
                 "Valores de product_id duplicados encontrados: %s",
@@ -235,10 +214,7 @@ class DataLoader:
     def _validate_event_types(
         df: pd.DataFrame,
     ) -> None:
-        invalid_event_types = (
-            set(df["event_type"].unique())
-            - VALID_EVENT_TYPES
-        )
+        invalid_event_types = set(df["event_type"].unique()) - VALID_EVENT_TYPES
 
         if invalid_event_types:
             logger.error(
@@ -247,8 +223,7 @@ class DataLoader:
             )
 
             raise DatasetValidationError(
-                f"Tipos de eventos inválidos encontrados: "
-                f"{sorted(invalid_event_types)}"
+                f"Tipos de eventos inválidos encontrados: {sorted(invalid_event_types)}"
             )
 
     @staticmethod
@@ -256,9 +231,8 @@ class DataLoader:
         products_df: pd.DataFrame,
         events_df: pd.DataFrame,
     ) -> None:
-        invalid_products = (
-            set(events_df["product_id"].unique())
-            - set(products_df["product_id"].unique())
+        invalid_products = set(events_df["product_id"].unique()) - set(
+            products_df["product_id"].unique()
         )
 
         if invalid_products:

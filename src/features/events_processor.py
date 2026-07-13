@@ -5,9 +5,7 @@ import pandas as pd
 
 from src.core.logging import app_logger
 
-logger = app_logger.getChild(
-    "features.events_processor"
-)
+logger = app_logger.getChild("features.events_processor")
 
 
 @dataclass(frozen=True, slots=True)
@@ -19,12 +17,7 @@ class EventCounters:
 
     @property
     def total(self) -> int:
-        return (
-            self.view
-            + self.click
-            + self.add_to_cart
-            + self.purchase
-        )
+        return self.view + self.click + self.add_to_cart + self.purchase
 
 
 class EventsProcessor:
@@ -50,24 +43,16 @@ class EventsProcessor:
             len(events_df),
         )
 
-        self._events_by_user_product = (
-            self._build_events_index(events_df)
-        )
+        self._events_by_user_product = self._build_events_index(events_df)
 
-        total_users = len(
-            self._events_by_user_product
-        )
+        total_users = len(self._events_by_user_product)
 
         total_relations = sum(
-            len(products)
-            for products in self._events_by_user_product.values()
+            len(products) for products in self._events_by_user_product.values()
         )
 
         logger.info(
-            (
-                "EventsProcessor inicializado. "
-                "users=%d user_product_relations=%d"
-            ),
+            ("EventsProcessor inicializado. users=%d user_product_relations=%d"),
             total_users,
             total_relations,
         )
@@ -98,30 +83,19 @@ class EventsProcessor:
         )
 
         for row in events_df.itertuples(index=False):
-            accumulator[
-                row.user_id
-            ][
-                row.product_id
-            ][
-                row.event_type
-            ] += 1
+            accumulator[row.user_id][row.product_id][row.event_type] += 1
 
-        result: dict[
-            str,
-            dict[str, EventCounters]
-        ] = {}
+        result: dict[str, dict[str, EventCounters]] = {}
 
         for user_id, products in accumulator.items():
             result[user_id] = {}
 
             for product_id, counters in products.items():
-                result[user_id][product_id] = (
-                    EventCounters(
-                        view=counters["view"],
-                        click=counters["click"],
-                        add_to_cart=counters["add_to_cart"],
-                        purchase=counters["purchase"],
-                    )
+                result[user_id][product_id] = EventCounters(
+                    view=counters["view"],
+                    click=counters["click"],
+                    add_to_cart=counters["add_to_cart"],
+                    purchase=counters["purchase"],
                 )
 
         return result
@@ -139,10 +113,8 @@ class EventsProcessor:
         retorna contadores zerados.
         """
 
-        return (
-            self._events_by_user_product
-            .get(user_id, {})
-            .get(product_id, EventCounters())
+        return self._events_by_user_product.get(user_id, {}).get(
+            product_id, EventCounters()
         )
 
     def get_interactions(
@@ -181,6 +153,4 @@ class EventsProcessor:
         Retorna todos os usuários conhecidos.
         """
 
-        return set(
-            self._events_by_user_product.keys()
-        )
+        return set(self._events_by_user_product.keys())

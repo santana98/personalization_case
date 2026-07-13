@@ -3,7 +3,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-
     products_path: str = Field(
         default="src/data/products.csv",
         alias="PRODUCTS_PATH",

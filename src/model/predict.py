@@ -30,14 +30,10 @@ def _validate_columns(
     extra = received - required
 
     if missing:
-        raise PredictionError(
-            f"Features ausentes: {sorted(missing)}"
-        )
+        raise PredictionError(f"Features ausentes: {sorted(missing)}")
 
     if extra:
-        raise PredictionError(
-            f"Features não esperadas: {sorted(extra)}"
-        )
+        raise PredictionError(f"Features não esperadas: {sorted(extra)}")
 
 
 def predict_score(
@@ -104,19 +100,13 @@ def predict_scores(
         expected_features,
     )
 
-    df_ordered = df_features[
-        expected_features
-    ]
+    df_ordered = df_features[expected_features]
 
     scaler = get_scaler()
     model = get_model()
 
-    x_scaled = scaler.transform(
-        df_ordered.to_numpy()
-    )
+    x_scaled = scaler.transform(df_ordered.to_numpy())
 
-    probabilities = model.predict_proba(
-        x_scaled
-    )[:, 1]
+    probabilities = model.predict_proba(x_scaled)[:, 1]
 
     return probabilities
