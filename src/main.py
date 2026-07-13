@@ -10,6 +10,7 @@ from src.core.settings import settings
 from src.features.loader import DataLoader
 from src.features.product_processor import ProductProcessor
 from src.features.events_processor import EventsProcessor
+from src.features.affinity_processor import AffinityProcessor
 
 
 @asynccontextmanager
@@ -26,6 +27,11 @@ async def lifespan(app: FastAPI):
     )
 
     events_processor = EventsProcessor(events_df=datasets.events_df)
+
+    affinity_processor = AffinityProcessor(
+        product_processor=product_processor,
+        events_processor=events_processor,
+    )
 
     yield
 
