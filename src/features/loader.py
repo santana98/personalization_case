@@ -20,9 +20,9 @@ VALID_EVENT_TYPES = {
 
 
 @dataclass(slots=True)
-class LoadedDatasets:
-    products: pd.DataFrame
-    events: pd.DataFrame
+class RawDatasets:
+    products_df: pd.DataFrame
+    events_df: pd.DataFrame
 
 
 class DataLoader:
@@ -34,7 +34,7 @@ class DataLoader:
         self.products_path = products_path
         self.events_path = events_path
 
-    def load(self) -> LoadedDatasets:
+    def load(self) -> RawDatasets:
         logger.info("Iniciando o carregamento dos Datasets.")
 
         products_df = self._load_products()
@@ -51,9 +51,9 @@ class DataLoader:
             len(events_df),
         )
 
-        return LoadedDatasets(
-            products=products_df,
-            events=events_df,
+        return RawDatasets(
+            products_df=products_df,
+            events_df=events_df,
         )
 
     def _load_products(self) -> pd.DataFrame:
