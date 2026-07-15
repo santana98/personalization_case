@@ -15,9 +15,7 @@ from src.features.product_processor import (
 from src.model.predict import predict_score
 
 
-logger = app_logger.getChild(
-    "features.recommendation_builder"
-)
+logger = app_logger.getChild("features.recommendation_builder")
 
 
 @dataclass(
@@ -57,61 +55,40 @@ class RecommendationBuilder:
         events_processor: EventsProcessor,
         affinity_processor: AffinityProcessor,
     ) -> None:
-        self._product_processor = (
-            product_processor
-        )
+        self._product_processor = product_processor
 
-        self._events_processor = (
-            events_processor
-        )
+        self._events_processor = events_processor
 
-        self._affinity_processor = (
-            affinity_processor
-        )
+        self._affinity_processor = affinity_processor
 
     def build(
         self,
     ) -> dict[str, tuple[Recommendation, ...]]:
-        logger.info(
-            "Iniciando construção da base de recomendações."
-        )
+        logger.info("Iniciando construção da base de recomendações.")
 
         started_at = perf_counter()
 
         recommendations_by_user = {}
 
-        user_ids = (
-            self._events_processor
-            .get_known_user_ids()
-        )
+        user_ids = self._events_processor.get_known_user_ids()
 
-        products = (
-            self._product_processor
-            .get_all_products()
-        )
+        products = self._product_processor.get_all_products()
 
         total_predictions = 0
 
         for user_id in user_ids:
-            user_affinity = (
-                self._affinity_processor
-                .get_user_affinity(user_id)
-            )
+            user_affinity = self._affinity_processor.get_user_affinity(user_id)
 
             recommendations = []
 
             for product in products:
-                feature_payload = (
-                    self._build_feature_payload(
-                        user_id=user_id,
-                        user_affinity=user_affinity,
-                        product=product,
-                    )
+                feature_payload = self._build_feature_payload(
+                    user_id=user_id,
+                    user_affinity=user_affinity,
+                    product=product,
                 )
 
-                score = predict_score(
-                    feature_payload
-                )
+                score = predict_score(feature_payload)
 
                 recommendations.append(
                     (
@@ -134,26 +111,25 @@ class RecommendationBuilder:
                 ),
             )
 
-            recommendations_by_user[
-                user_id
-            ] = tuple(
-                recommendation
-                for _, recommendation
-                in recommendations
+            recommendations_by_user[user_id] = tuple(
+                recommendation for _, recommendation in recommendations
             )
 
-        elapsed_seconds = (
-            perf_counter() - started_at
-        )
+        elapsed_seconds = perf_counter() - started_at
+
+        throughput = total_predictions / elapsed_seconds if elapsed_seconds > 0 else 0
+
         logger.info(
             (
                 "Base de recomendações construída. "
                 "users=%d predictions=%d "
-                "elapsed_seconds=%.3f"
+                "elapsed_seconds=%.3f "
+                "predictions_per_second=%.2f"
             ),
             len(recommendations_by_user),
             total_predictions,
             elapsed_seconds,
+            throughput,
         )
 
         return recommendations_by_user
@@ -164,26 +140,17 @@ class RecommendationBuilder:
         user_affinity: str,
         product: Product,
     ) -> dict[str, int | float]:
-        interactions = (
-            self._events_processor
-            .get_interactions(
-                user_id=user_id,
-                product_id=product.product_id,
-            )
+        interactions = self._events_processor.get_interactions(
+            user_id=user_id,
+            product_id=product.product_id,
         )
 
-        affinity_match = int(
-            product.category == user_affinity
-        )
+        affinity_match = int(product.category == user_affinity)
 
         return {
             "interactions": interactions,
             "price": product.price,
             "avg_rating": product.avg_rating,
-            "popularity_score": (
-                product.popularity_score
-            ),
-            "user_affinity_match": (
-                affinity_match
-            ),
+            "popularity_score": (product.popularity_score),
+            "user_affinity_match": (affinity_match),
         }

@@ -1,19 +1,88 @@
 from fastapi import APIRouter, Request
 
-from src.core.schemas import ResponseRecommendations
+from src.api.routes.schemas import (
+    RecommendationsResponse,
+    ProductRecommendationResponse,
+)
+from src.core.settings import settings
+from src.core.logging import app_logger
+
+logger = app_logger.getChild("api.recommendations")
 
 router = APIRouter()
 
 
-@router.get("/recommendations/{user_id}")
-def recommendations(user_id: str, request: Request):
+@router.get("/recommendations/{user_id}", response_model=RecommendationsResponse)
+def get_recommendations(
+    user_id: str,
+    request: Request,
+) -> RecommendationsResponse:
 
-    user_recommendations = ResponseRecommendations(
-        user_id=user_id,
-        products_recommendations=[
-            {"product": "0001", "purchase_propensity_score": 0.8, "affinity_user": 1},
-            {"product": "0002", "purchase_propensity_score": 0.4, "affinity_user": 0},
-        ],
+    recommendations_by_user = (
+        request.app.state
+        .recommendations_by_user
     )
 
-    return user_recommendations
+    popular_products = (
+        request.app.state
+        .popular_products
+    )
+
+    recommendations = (
+        recommendations_by_user.get(user_id)
+    )
+
+
+    if recommendations is not None:
+        products = [
+            ProductRecommendationResponse(
+                product_id=item.product_id,
+                score=item.score,
+            )
+            for item in recommendations[
+                : settings.recommendation_top_k
+            ]
+        ]
+
+        logger.info(
+            (
+                "Recommendations returned. "
+                "user_id=%s "
+                "cold_start=false "
+                "products=%d"
+            ),
+            user_id,
+            len(products),
+        )
+
+        return RecommendationsResponse(
+            user_id=user_id,
+            cold_start=False,
+            products=products,
+        )
+
+    products = [
+        ProductRecommendationResponse(
+            product_id=product.product_id,
+            score=0.0,
+        )
+        for product in popular_products[
+            : settings.recommendation_top_k
+        ]
+    ]
+
+    logger.info(
+        (
+            "Cold start recommendations returned. "
+            "user_id=%s "
+            "products=%d"
+        ),
+        user_id,
+        len(products),
+    )
+
+    return RecommendationsResponse(
+        user_id=user_id,
+        cold_start=True,
+        products=products,
+    )

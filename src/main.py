@@ -32,21 +32,15 @@ async def lifespan(app: FastAPI):
         events_processor=events_processor,
     )
 
-    recommendation_builder = (
-        RecommendationBuilder(
-            product_processor=product_processor,
-            events_processor=events_processor,
-            affinity_processor=affinity_processor,
-        )
+    recommendation_builder = RecommendationBuilder(
+        product_processor=product_processor,
+        events_processor=events_processor,
+        affinity_processor=affinity_processor,
     )
 
-    app.state.popular_products = (
-        product_processor.get_popular_products()
-    )
+    app.state.popular_products = product_processor.get_popular_products()
 
-    app.state.recommendations_by_user = (
-        recommendation_builder.build()
-    )
+    app.state.recommendations_by_user = recommendation_builder.build()
 
     yield
 

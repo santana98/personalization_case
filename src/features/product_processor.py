@@ -81,7 +81,7 @@ class ProductProcessor:
         )["product_id"].tolist()
 
         return ranking
-    
+
     def _build_popular_products(
         self,
     ) -> tuple[Product, ...]:
@@ -123,7 +123,7 @@ class ProductProcessor:
         return self._popularity_ranking
 
     def get_all_products(
-    self,
+        self,
     ) -> tuple[Product, ...]:
         return self._all_products
 
