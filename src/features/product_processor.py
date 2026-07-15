@@ -44,6 +44,10 @@ class ProductProcessor:
 
         self._popularity_ranking = self._build_popularity_ranking(products_df)
 
+        self._all_products = tuple(self._products_by_id.values())
+
+        self._popular_products = self._build_popular_products()
+
         logger.info(
             "ProductProcessor inicializado. products=%d ranking=%d",
             len(self._products_by_id),
@@ -77,6 +81,21 @@ class ProductProcessor:
         )["product_id"].tolist()
 
         return ranking
+    
+    def _build_popular_products(
+        self,
+    ) -> tuple[Product, ...]:
+
+        return tuple(
+            sorted(
+                self._all_products,
+                key=lambda product: (
+                    -product.popularity_score,
+                    -product.avg_rating,
+                    product.product_id,
+                ),
+            )
+        )
 
     def get_product(
         self,
@@ -102,3 +121,13 @@ class ProductProcessor:
         self,
     ) -> list[str]:
         return self._popularity_ranking
+
+    def get_all_products(
+    self,
+    ) -> tuple[Product, ...]:
+        return self._all_products
+
+    def get_popular_products(
+        self,
+    ) -> tuple[Product, ...]:
+        return self._popular_products
