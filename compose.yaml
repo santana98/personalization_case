@@ -1,0 +1,31 @@
+# Usage:
+#
+#   docker compose up --build
+#     -> Only the API. ENABLE_OTEL defaults to false: no instrumentation,
+#        no observability stack. Fastest path for local development.
+#
+#   ENABLE_OTEL=true docker compose --profile otel up --build
+#     -> API (instrumented, exec'd via opentelemetry-instrument) +
+#        grafana/otel-lgtm (Tempo + Prometheus/Mimir + Loki + Grafana,
+#        all in one container -- same pattern as the reference project).
+#        Grafana UI: http://localhost:3000
+#        OTLP gRPC receiver: localhost:4317
+
+services:
+  api:
+    image: recommendation_api:${APP_VERSION}
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ENABLE_OTEL: "${ENABLE_OTEL:-false}"
+      OTEL_SERVICE_NAME: recommendation_api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel:4317
+
+  otel:
+    image: grafana/otel-lgtm
+    profiles:
+      - otel
+    ports:
+      - "3000:3000"
+      - "4317:4317"
