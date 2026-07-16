@@ -12,3 +12,15 @@ dependencies = [
     "scikit-learn==1.8.0",
     "uvicorn>=0.51.0",
 ]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "httpx2>=2.7.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
