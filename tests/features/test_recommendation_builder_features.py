@@ -47,7 +47,9 @@ def product_processor(
 
 @pytest.fixture
 def builder(
-    build_recommendation_builder: Callable[[list[dict], list[dict]], RecommendationBuilder],
+    build_recommendation_builder: Callable[
+        [list[dict], list[dict]], RecommendationBuilder
+    ],
     products: list[dict],
     events: list[dict],
 ) -> RecommendationBuilder:
