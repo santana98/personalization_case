@@ -32,7 +32,7 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(log_record)
 
 
-app_logger = logging.getLogger("recommendation-api")
+app_logger = logging.getLogger("recommendation_api")
 app_logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(JsonFormatter())
@@ -42,9 +42,9 @@ app_logger.addHandler(handler)
 
 def log_request(record):
     """
-    Exemplo de helper para log de requisição.
-    `record` é esperado ser um LogRecord com atributos extras
-    (p.ex. adicionados via logger.info(msg, extra={...})).
+    Example helper for request logging.
+    `record` is expected to be a LogRecord with extra attributes
+    (e.g. added via logger.info(msg, extra={...})).
     """
     app_logger.handle(record)
 

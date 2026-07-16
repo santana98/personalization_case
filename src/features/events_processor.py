@@ -22,10 +22,10 @@ class EventCounters:
 
 class EventsProcessor:
     """
-    Responsável por agregar eventos de usuários
-    e disponibilizar estruturas otimizadas para consulta.
+    Responsible for aggregating user events
+    and providing optimized structures for querying.
 
-    Estrutura interna:
+    Internal structure:
 
     {
         user_id: {
@@ -39,7 +39,7 @@ class EventsProcessor:
         events_df: pd.DataFrame,
     ) -> None:
         logger.info(
-            "Inicializando EventsProcessor. events=%d",
+            "Initializing EventsProcessor.  events=%d",
             len(events_df),
         )
 
@@ -52,7 +52,7 @@ class EventsProcessor:
         )
 
         logger.info(
-            ("EventsProcessor inicializado. users=%d user_product_relations=%d"),
+            ("EventsProcessor initialized. users=%d user_product_relations=%d"),
             total_users,
             total_relations,
         )
@@ -62,7 +62,7 @@ class EventsProcessor:
         events_df: pd.DataFrame,
     ) -> dict[str, dict[str, EventCounters]]:
         """
-        Constrói a estrutura:
+        Builds the structure:
 
         {
             user_id: {
@@ -106,11 +106,11 @@ class EventsProcessor:
         product_id: str,
     ) -> EventCounters:
         """
-        Retorna os contadores detalhados
-        para um usuário e produto.
+        Returns the detailed counters
+        for a user and product.
 
-        Caso não exista histórico,
-        retorna contadores zerados.
+        If there is no history,
+        returns zeroed counters.
         """
 
         return self._events_by_user_product.get(user_id, {}).get(
@@ -123,8 +123,8 @@ class EventsProcessor:
         product_id: str,
     ) -> int:
         """
-        Retorna o total de interações
-        do usuário com o produto.
+        Returns the total number of interactions
+        the user has had with the product.
         """
 
         return self.get_event_counters(
@@ -137,8 +137,8 @@ class EventsProcessor:
         user_id: str,
     ) -> dict[str, EventCounters]:
         """
-        Retorna todos os produtos
-        com os quais o usuário possui histórico.
+        Returns all products
+        the user has history with.
         """
 
         return self._events_by_user_product.get(
@@ -150,7 +150,6 @@ class EventsProcessor:
         self,
     ) -> set[str]:
         """
-        Retorna todos os usuários conhecidos.
-        """
+      Returns all known users.        """
 
         return set(self._events_by_user_product.keys())

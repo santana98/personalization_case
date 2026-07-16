@@ -11,12 +11,12 @@ logger = app_logger.getChild("model.model_loader")
 
 
 class ModelLoaderError(RuntimeError):
-    """Erro relacionado ao carregamento do artefato."""
+    """Error related to loading the artifact."""
 
 
 class _ModelRegistry:
     """
-    Registry singleton carregado no startup da aplicação.
+    Singleton registry loaded at application startup.
     """
 
     def __init__(self) -> None:
@@ -28,23 +28,23 @@ class _ModelRegistry:
 
     def load(self, model_path: Path) -> None:
         if self.loaded:
-            logger.debug("Modelo já carregado. Ignorando novo carregamento.")
+            logger.debug("Model already loaded. Skipping new load.")
             return
 
         model_path = model_path
 
         logger.info(
-            "Iniciando carregamento do modelo: %s",
+            "Starting model load: %s",
             model_path,
         )
 
         if not model_path.exists():
             logger.error(
-                "Arquivo de modelo não encontrado: %s",
+                "Model file not found: %s",
                 model_path,
             )
 
-            raise ModelLoaderError(f"Modelo não encontrado: {model_path}")
+            raise ModelLoaderError(f"Model not found: {model_path}")
 
         try:
             with model_path.open("rb") as f:
@@ -52,15 +52,15 @@ class _ModelRegistry:
 
         except Exception as exc:
             logger.exception(
-                "Erro ao carregar artefato: %s",
+                "Error loading artifact: %s",
                 model_path,
             )
             raise ModelLoaderError(
-                f"Falha ao carregar artefato '{model_path}': {exc}"
+                f"FFailed to load artifact '{model_path}': {exc}"
             ) from exc
 
         if not isinstance(artifact, dict):
-            raise ModelLoaderError("Artefato inválido. Esperado dict.")
+            raise ModelLoaderError("Invalid artifact. Expected dict.")
 
         required_keys = {
             "model",
@@ -72,7 +72,7 @@ class _ModelRegistry:
 
         if missing:
             raise ModelLoaderError(
-                f"Artefato incompleto. Chaves ausentes: {sorted(missing)}"
+                f"Incomplete artifact. Missing keys: {sorted(missing)}"
             )
 
         self.model = artifact["model"]
@@ -81,19 +81,19 @@ class _ModelRegistry:
 
         self.loaded = True
 
-        logger.info("Modelo carregado com sucesso.")
+        logger.info("Model loaded successfully.")
 
     def validate_features(
         self,
         feature_names: list[str],
     ) -> bool:
         """
-        Valida se a ordem das features recebidas
-        corresponde exatamente à usada no treinamento.
+        Validates that the order of the received features
+        exactly matches the one used during training.
         """
 
         if self.feature_cols is None:
-            raise ModelLoaderError("Modelo ainda não carregado.")
+            raise ModelLoaderError("Model not loaded yet.")
 
         return feature_names == self.feature_cols
 
@@ -109,21 +109,21 @@ def load_model(
 
 def get_model() -> Any:
     if _registry.model is None:
-        raise ModelLoaderError("Modelo não carregado.")
+        raise ModelLoaderError("Model not loaded.")
 
     return _registry.model
 
 
 def get_scaler() -> Any:
     if _registry.scaler is None:
-        raise ModelLoaderError("Scaler não carregado.")
+        raise ModelLoaderError("Scaler not loaded.")
 
     return _registry.scaler
 
 
 def get_feature_cols() -> list[str]:
     if _registry.feature_cols is None:
-        raise ModelLoaderError("Features não carregadas.")
+        raise ModelLoaderError("Features not loaded.")
 
     return _registry.feature_cols
 

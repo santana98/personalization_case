@@ -28,7 +28,7 @@ class CategoryAffinity:
         self,
     ) -> tuple[int, int, int, int, int]:
         """
-        Ordem de prioridade:
+        Order of priority:
 
         interactions
         purchase
@@ -48,19 +48,19 @@ class CategoryAffinity:
 
 class AffinityProcessor:
     """
-    Determina a categoria de maior afinidade
-    de cada usuário.
+    Determines the category of highest affinity
+    for each user.
 
-    Regras:
+    Rules:
 
-    1. Maior número de interações.
-    2. Desempate por:
+    1. Highest number of interactions.
+    2. Tie-break by:
         purchase >
         add_to_cart >
         click >
         view
-    3. Persistindo empate:
-        ordem alfabética da categoria.
+    3. If the tie persists:
+        alphabetical order of the category.
     """
 
     def __init__(
@@ -68,7 +68,7 @@ class AffinityProcessor:
         product_processor: ProductProcessor,
         events_processor: EventsProcessor,
     ) -> None:
-        logger.info("Inicializando AffinityProcessor.")
+        logger.info("Initializing AffinityProcessor.")
 
         self._user_affinities = self._build_user_affinities(
             product_processor=product_processor,
@@ -76,7 +76,7 @@ class AffinityProcessor:
         )
 
         logger.info(
-            ("AffinityProcessor inicializado. users=%d"),
+            ("AffinityProcessor initialized.users=%d"),
             len(self._user_affinities),
         )
 

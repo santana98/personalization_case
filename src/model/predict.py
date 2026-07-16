@@ -11,7 +11,7 @@ from src.model.model_loader import (
 
 
 class PredictionError(RuntimeError):
-    """Erro relacionado à inferência."""
+    """Error related to inference."""
 
 
 def _validate_columns(
@@ -19,8 +19,8 @@ def _validate_columns(
     expected: list[str],
 ) -> None:
     """
-    Exige correspondência exata entre
-    features esperadas e recebidas.
+    Requires an exact match between
+    expected and received features.
     """
 
     received = set(columns)
@@ -30,28 +30,28 @@ def _validate_columns(
     extra = received - required
 
     if missing:
-        raise PredictionError(f"Features ausentes: {sorted(missing)}")
+        raise PredictionError(f"Missing features: {sorted(missing)}")
 
     if extra:
-        raise PredictionError(f"Features não esperadas: {sorted(extra)}")
+        raise PredictionError(f"Unexpected features: {sorted(extra)}")
 
 
 def predict_score(
     features: dict[str, Any],
 ) -> float:
     """
-    Realiza inferência para um único registro.
+    Performs inference for a single record.
 
     Parameters
     ----------
     features:
-        Dict contendo todas as features
-        esperadas pelo modelo.
+        Dict containing all features
+        expected by the model.
 
     Returns
     -------
     float
-        Probabilidade da classe positiva.
+        Probability of the positive class.
     """
 
     expected_features = get_feature_cols()
@@ -79,18 +79,18 @@ def predict_scores(
     df_features: pd.DataFrame,
 ) -> np.ndarray:
     """
-    Realiza inferência em lote.
+    Performs batch inference.
 
     Parameters
     ----------
     df_features:
-        DataFrame contendo apenas as
-        features utilizadas pelo modelo.
+        DataFrame containing only the
+        features used by the model.
 
     Returns
     -------
     np.ndarray
-        Vetor de probabilidades.
+        Vector of probabilities.
     """
 
     expected_features = get_feature_cols()

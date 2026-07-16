@@ -30,7 +30,7 @@ class DataLoader:
         self.events_path = events_path
 
     def load(self) -> RawDatasets:
-        logger.info("Iniciando o carregamento dos Datasets.")
+        logger.info("Starting dataset loading.")
 
         products_df = self._load_products()
         events_df = self._load_events()
@@ -41,7 +41,7 @@ class DataLoader:
         )
 
         logger.info(
-            "Datasets carregados com sucesso. products=%d events=%d",
+            "Datasets loaded successfully. products=%d events=%d",
             len(products_df),
             len(events_df),
         )
@@ -53,7 +53,7 @@ class DataLoader:
 
     def _load_products(self) -> pd.DataFrame:
         logger.info(
-            "Carregando dataset de produtos: '%s'.",
+            "Loading products dataset: '%s'.",
             self.products_path,
         )
 
@@ -79,7 +79,7 @@ class DataLoader:
 
     def _load_events(self) -> pd.DataFrame:
         logger.info(
-            "Carregando dataset de eventos: '%s'.",
+            "Loading events dataset: '%s'.",
             self.events_path,
         )
 
@@ -109,19 +109,19 @@ class DataLoader:
 
         if not file_path.exists():
             logger.error(
-                "Arquivo de dataset não encontrado: '%s'.",
+                "Dataset file not found: '%s'.",
                 path,
             )
-            raise FileNotFoundError(f"Arquivo de dataset não encontrado: {path}")
+            raise FileNotFoundError(f"Dataset file not found: {path}")
 
         try:
             return pd.read_csv(file_path)
         except Exception as exc:
             logger.exception(
-                "Falha ao ler dataset '%s'.",
+                "Failed to read dataset: '%s'.",
                 path,
             )
-            raise DatasetValidationError(f"Falha ao ler dataset: {path}") from exc
+            raise DatasetValidationError(f"Failed to read dataset: {path}") from exc
 
     @staticmethod
     def _validate_required_columns(
@@ -133,12 +133,12 @@ class DataLoader:
 
         if missing_columns:
             logger.error(
-                "%s a validação do dataset falhou. Colunas ausentes: %s",
+                "%s dataset validation failed. Missing columns: %s",
                 dataset_name,
                 sorted(missing_columns),
             )
             raise DatasetValidationError(
-                f"{dataset_name} dataset com colunas ausentes: "
+                f"{dataset_name} dataset with missing columns: "
                 f"{sorted(missing_columns)}"
             )
 
@@ -152,12 +152,12 @@ class DataLoader:
 
         if null_columns:
             logger.error(
-                "%s dataset contém valores nulos nas colunas: %s",
+                "%s dataset contains null values in columns: %s",
                 dataset_name,
                 sorted(null_columns),
             )
             raise DatasetValidationError(
-                f"{dataset_name} dataset com valores nulos "
+                f"{dataset_name} dataset with null values "
                 f"nas colunas: {sorted(null_columns)}"
             )
 
@@ -170,9 +170,9 @@ class DataLoader:
             df["avg_rating"] = df["avg_rating"].astype(float)
             df["popularity_score"] = df["popularity_score"].astype(float)
         except Exception as exc:
-            logger.exception("Falha ao converter os tipos do dataset de produtos")
+            logger.exception("Failed to cast products dataset types")
             raise DatasetValidationError(
-                "Tipos de dados inválidos encontrados no dataset de produtos."
+                "Invalid data types found in the products dataset."
             ) from exc
 
     @staticmethod
@@ -187,9 +187,9 @@ class DataLoader:
                 errors="raise",
             )
         except Exception as exc:
-            logger.exception("Falha ao converter os tipos do dataset de eventos.")
+            logger.exception("Failed to cast events dataset types.")
             raise DatasetValidationError(
-                "Tipos de dados inválidos encontrados no dataset de eventos."
+                "Invalid data types found in the events dataset."
             ) from exc
 
     @staticmethod
@@ -202,13 +202,11 @@ class DataLoader:
             duplicated_ids = df.loc[duplicated, "product_id"].unique().tolist()
 
             logger.error(
-                "Valores de product_id duplicados encontrados: %s",
+                "Duplicate product_id values found: %s",
                 duplicated_ids,
             )
 
-            raise DatasetValidationError(
-                "Valores de product_id duplicados encontrados."
-            )
+            raise DatasetValidationError("Duplicate product_id values found.")
 
     @staticmethod
     def _validate_event_types(
@@ -218,12 +216,12 @@ class DataLoader:
 
         if invalid_event_types:
             logger.error(
-                "Tipos de eventos inválidos encontrados: %s",
+                "Invalid event types found: %s",
                 sorted(invalid_event_types),
             )
 
             raise DatasetValidationError(
-                f"Tipos de eventos inválidos encontrados: {sorted(invalid_event_types)}"
+                f"Invalid event types found {sorted(invalid_event_types)}"
             )
 
     @staticmethod
@@ -237,10 +235,10 @@ class DataLoader:
 
         if invalid_products:
             logger.error(
-                "O dataset de eventos faz referência a produtos desconhecidos.: %s",
+                "The events dataset references unknown products: %s",
                 sorted(invalid_products),
             )
 
             raise DatasetValidationError(
-                "O dataset de eventos contém referências de produtos desconhecidas."
+                "The events dataset contains references to unknown products."
             )

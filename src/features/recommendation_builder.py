@@ -19,10 +19,10 @@ logger = app_logger.getChild("features.recommendation_builder")
 
 class RecommendationBuilder:
     """
-    Responsável por construir a base final
-    de recomendações em memória.
+    Responsible for building the final
+    in-memory recommendation base.
 
-    Estrutura produzida:
+    Structure produced:
 
     {
         user_id: (
@@ -31,7 +31,7 @@ class RecommendationBuilder:
         )
     }
 
-    Ordenação:
+    Ordering:
 
     1. score DESC
     2. popularity_score DESC
@@ -54,7 +54,7 @@ class RecommendationBuilder:
     def build(
         self,
     ) -> dict[str, tuple[Recommendation, ...]]:
-        logger.info("Iniciando construção da base de recomendações.")
+        logger.info("Starting construction of the recommendation base.")
 
         started_at = perf_counter()
 
@@ -111,7 +111,7 @@ class RecommendationBuilder:
 
         logger.info(
             (
-                "Base de recomendações construída. "
+                "Recommendation base built. "
                 "users=%d predictions=%d "
                 "elapsed_seconds=%.3f "
                 "predictions_per_second=%.2f"

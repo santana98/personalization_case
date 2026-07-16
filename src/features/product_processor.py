@@ -9,16 +9,16 @@ logger = app_logger.getChild("features.product_processor")
 
 class ProductProcessor:
     """
-    Responsável por disponibilizar estruturas de consulta
-    relacionadas ao catálogo de produtos.
+    Responsible for providing query structures
+    related to the product catalog.
 
-    Estruturas geradas:
+    Structures generated:
 
     - products_by_id
-        Busca O(1) por product_id
+        O(1) lookup by product_id
 
     - popularity_ranking
-        Lista de product_ids ordenados por popularity_score desc
+        List of product_ids sorted by popularity_score desc
     """
 
     def __init__(
@@ -26,7 +26,7 @@ class ProductProcessor:
         products_df: pd.DataFrame,
     ) -> None:
         logger.info(
-            "Inicializando ProductProcessor. products=%d",
+            "Initializing ProductProcessor. products=%d",
             len(products_df),
         )
 
@@ -39,7 +39,7 @@ class ProductProcessor:
         self._popular_products = self._build_popular_products()
 
         logger.info(
-            "ProductProcessor inicializado. products=%d ranking=%d",
+            "ProductProcessor initialized. products=%d ranking=%d",
             len(self._products_by_id),
             len(self._popularity_ranking),
         )
@@ -96,7 +96,7 @@ class ProductProcessor:
 
         except KeyError as exc:
             logger.error(
-                "Produto desconhecido solicitado: %s",
+                "Unknown product requested: %s",
                 product_id,
             )
 

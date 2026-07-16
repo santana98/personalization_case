@@ -1,5 +1,5 @@
 class DatasetValidationError(Exception):
-    """Gerado quando um dataset não está em conformidade com o esquema esperado."""
+    """Raised when a dataset does not conform to the expected schema."""
 
 
 class FeaturesError(Exception):
