@@ -1,20 +1,10 @@
-from dataclasses import dataclass
-
 import pandas as pd
 
 from src.core.logging import app_logger
 from src.features.exceptions import ProductNotFoundError
+from src.features.domain import Product
 
 logger = app_logger.getChild("features.product_processor")
-
-
-@dataclass(frozen=True, slots=True)
-class Product:
-    product_id: str
-    category: str
-    price: float
-    avg_rating: float
-    popularity_score: float
 
 
 class ProductProcessor:

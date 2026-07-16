@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from time import perf_counter
 
 from src.core.logging import app_logger
@@ -9,22 +8,13 @@ from src.features.events_processor import (
     EventsProcessor,
 )
 from src.features.product_processor import (
-    Product,
     ProductProcessor,
 )
-from src.model.predict import predict_score
 
+from src.model.predict import predict_score
+from src.features.domain import Recommendation, Product
 
 logger = app_logger.getChild("features.recommendation_builder")
-
-
-@dataclass(
-    frozen=True,
-    slots=True,
-)
-class Recommendation:
-    product_id: str
-    score: float
 
 
 class RecommendationBuilder:
@@ -82,13 +72,13 @@ class RecommendationBuilder:
             recommendations = []
 
             for product in products:
-                feature_payload = self._build_feature_payload(
+                feature_vector = self._create_feature_vector(
                     user_id=user_id,
                     user_affinity=user_affinity,
                     product=product,
                 )
 
-                score = predict_score(feature_payload)
+                score = predict_score(feature_vector)
 
                 recommendations.append(
                     (
@@ -134,7 +124,7 @@ class RecommendationBuilder:
 
         return recommendations_by_user
 
-    def _build_feature_payload(
+    def _create_feature_vector(
         self,
         user_id: str,
         user_affinity: str,
