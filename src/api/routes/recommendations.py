@@ -18,20 +18,11 @@ def get_recommendations(
     request: Request,
 ) -> RecommendationsResponse:
 
-    recommendations_by_user = (
-        request.app.state
-        .recommendations_by_user
-    )
+    recommendations_by_user = request.app.state.recommendations_by_user
 
-    popular_products = (
-        request.app.state
-        .popular_products
-    )
+    popular_products = request.app.state.popular_products
 
-    recommendations = (
-        recommendations_by_user.get(user_id)
-    )
-
+    recommendations = recommendations_by_user.get(user_id)
 
     if recommendations is not None:
         products = [
@@ -39,18 +30,11 @@ def get_recommendations(
                 product_id=item.product_id,
                 score=item.score,
             )
-            for item in recommendations[
-                : settings.recommendation_top_k
-            ]
+            for item in recommendations[: settings.recommendation_top_k]
         ]
 
         logger.info(
-            (
-                "Recommendations returned. "
-                "user_id=%s "
-                "cold_start=false "
-                "products=%d"
-            ),
+            ("Recommendations returned. user_id=%s cold_start=false products=%d"),
             user_id,
             len(products),
         )
@@ -66,17 +50,11 @@ def get_recommendations(
             product_id=product.product_id,
             score=0.0,
         )
-        for product in popular_products[
-            : settings.recommendation_top_k
-        ]
+        for product in popular_products[: settings.recommendation_top_k]
     ]
 
     logger.info(
-        (
-            "Cold start recommendations returned. "
-            "user_id=%s "
-            "products=%d"
-        ),
+        ("Cold start recommendations returned. user_id=%s products=%d"),
         user_id,
         len(products),
     )

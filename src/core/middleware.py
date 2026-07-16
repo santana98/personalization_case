@@ -1,4 +1,4 @@
-import time
+from time import perf_counter
 from uuid import uuid4
 from fastapi import Request
 from src.core.logging import app_logger
@@ -10,12 +10,12 @@ async def log_requests(request: Request, call_next):
     request_id = request.headers.get("X-Request-ID", str(uuid4()))
     request.state.request_id = request_id
 
-    start_time = time.perf_counter()
+    start_time = perf_counter()
 
     try:
         response = await call_next(request)
     except Exception as e:
-        latency_ms = int((time.perf_counter() - start_time) * 1000)
+        latency_ms = int((perf_counter() - start_time) * 1000)
         logger.error(
             "Unhandled exception",
             extra={
@@ -29,7 +29,7 @@ async def log_requests(request: Request, call_next):
         )
         raise
 
-    latency_ms = int((time.perf_counter() - start_time) * 1000)
+    latency_ms = int((perf_counter() - start_time) * 1000)
     logger.info(
         "Request completed",
         extra={
